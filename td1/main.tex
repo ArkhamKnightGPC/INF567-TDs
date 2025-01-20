@@ -1,0 +1,280 @@
+\documentclass[]{article}
+\pagenumbering{gobble}
+\usepackage[a3paper]{geometry}
+\usepackage{amsmath, amssymb, amscd, amsthm, amsfonts}
+\usepackage{graphicx}
+
+\title{TD1: Wireless Propagation}
+\author{Gabriel PEREIRA DE CARVALHO}
+\date{Last modification: \today}
+
+\begin{document}
+	
+	\maketitle
+	
+	\section{Path-loss models}
+	
+	For our calculations, let's convert the received power from \texttt{dBm} to \texttt{mW}.
+	
+	\begin{center}
+		\begin{tabular}{ |c|c|c| } 
+			\hline
+			Distance $d$ [m] & Received power [dBm] & Received power [mW] \\
+			\hline
+			$50$ & $1.2$ & $1.32$ \\
+			\hline
+			$100$ & $-10.4$ & $9.12 \cdot 10^{-2}$ \\
+			\hline
+			$250$ & $-19.8$ & $1.05 \cdot 10^{-2}$ \\
+			\hline
+			$500$ & $-30.4$ & $9.12 \cdot 10^{-4}$ \\
+			\hline
+			$1000$ & $-50.4$ & $9.12 \cdot 10^{-6}$ \\
+			\hline
+		\end{tabular}
+	\end{center}
+	
+	We also convert the antenna gains $g_t = 39.81$ and $g_r = 1$, and we convert the transmitted power $p_t = 39.81\mathrm{W}$.
+	
+	\subsection*{Question 1}
+	
+	In the simplified path loss model we have
+	
+	\begin{equation}
+		p_r(d) = p_t K \left(\frac{d_0}{d}\right)^\alpha
+	\end{equation}
+	
+	we compare this expression with the free-space path-loss model
+	
+	\begin{equation}
+		\frac{p_t}{p_r} = \left(\frac{4 \pi d}{\lambda \sqrt{g_t g_r}}\right)^2
+	\end{equation}
+	
+	with $\lambda =\frac{c}{f_c}$. At $d = d_0$, we conclude that 
+	
+	\begin{equation}
+		K = \left(\frac{\lambda \sqrt{g_t g_r}}{4 \pi d_0}\right)^2
+	\end{equation}
+	
+	which gives $K = 2.8 \cdot 10^{-2}$ or $K = -15.5 \mathrm{dB}$.
+	
+	\subsection*{Question 2}
+	
+	\begin{equation}
+		p_r[dBm] = 10\log_{10}(K \cdot p_t[mW]) + 10\alpha\log_{10}\left(\frac{d_0}{d}\right)
+	\end{equation}
+	
+	The mean squared error is $\mathrm{MSE} = \frac{1}{5}\sum_{i=1}^{5} \left(p_r^{\mathrm{model}}(d_i) - p_r^{\mathrm{measured}}(d_i)\right)^2$.
+	
+	Let's define $C_i(d_i) = 10\log_{10}(K \cdot p_t[mW]) - p_r^{\mathrm{measured}}(d_i)[dBm]$ to ease the notation.
+	
+	We observe that 
+	\begin{align}
+		MSE &= \frac{1}{5}\sum_{i=1}^{5} \left( \alpha10\log_{10}\left(\frac{d_0}{d_i}\right) + C_i(d_i) \right)^2 \\
+		&= \frac{1}{5}\sum_{i=1}^{5} \alpha^2 100 \log_{10}^2\left(\frac{d_0}{d_i}\right) + 2\alpha 10 \log_{10}\left(\frac{d_0}{d_i}\right) C_i(d_i) + C_i(d_i)^2 \\
+		&= \alpha^2 \sum_{i=1}^{5} 20\log_{10}^2\left(\frac{d_0}{d_i}\right) + \alpha \sum_{i=1}^{5} 4 \log_{10}\left(\frac{d_0}{d_i}\right)C_i(d_i) + \frac{1}{5}\sum_{i=1}^{5} C_i(d_i)^2
+	\end{align}
+	is a second order polynomial in $\alpha$. We conclude that
+	\begin{align}
+		\alpha_{\mathrm{opt}} &= -\frac{\sum_{i=1}^{5} 4\log_{10}\left(\frac{d_0}{d_i}\right)C_i(d_i)}{2\sum_{i=1}^{5} 20\log_{10}^2\left(\frac{d_0}{d_i}\right)} \\
+		\implies \alpha_{\mathrm{opt}} &= 2.28
+	\end{align}
+	
+	\includegraphics[]{../alpha_plot.png}
+	
+	Now we can compute the received power $p_r$ at $d = 750\mathrm{m}$.
+	
+	\begin{equation}
+		p_r(d=750\mathrm{m}) = -35 \mathrm{dBm}
+	\end{equation}
+	
+	\subsection*{Question 3}
+	
+	We compute the variance relative to the simplified model (with powers in dBm),
+	
+	\begin{equation}
+		 \mathrm{MSE} = \frac{1}{5}\sum_{i=1}^{5} \left(p_r^{\mathrm{model}}(d_i) - p_r^{\mathrm{measured}}(d_i)\right)^2 = 57.45
+	\end{equation}
+	
+	this gives us a shadowing standard deviation
+	
+	\begin{equation}
+		\sigma = \sqrt{\mathrm{MSE}} = 7.58
+	\end{equation}
+	
+	In dB, we have $\sigma = 8.8 \mathrm{dB}$
+	
+	\subsection*{Question 4}
+	
+	We can reuse the expression we got at question 1 to compute the new $K$,
+	
+	\begin{equation}
+		K = \left(\frac{\lambda \sqrt{g_t g_r}}{4 \pi d_0}\right)^2
+	\end{equation}
+	
+	which gives $K = 2.0 \cdot 10^{-3}$ or $K = -26.98 \mathrm{dB}$.
+	
+	For a configuration with $N$ antennas, with the simplified model, we have 
+	
+	\begin{equation}
+		p_r[dBm] = 10\log_{10}\left(K p_t \left(\frac{d_0}{d}\right)^\alpha \right) + 10\log_{10} N
+	\end{equation}
+	
+	We want $p_r(d=750\mathrm{m}) = -35 \mathrm{dBm}$, which implies
+	
+	\begin{equation}
+		N = 10^{\frac{p_r - 10\log_{10}\left(K p_t \left(\frac{d_0}{d}\right)^\alpha \right)}{10}} = 60.64
+	\end{equation}
+	
+	We round up to $N = 61$ antennas.
+	
+	\subsection*{Question 5}
+	
+	We have
+	
+	\begin{equation}
+		10 \log_{10} N_d = 16 \mathrm{dBi} \implies N_d = 39.81
+	\end{equation}
+	
+	which we round up to $N_d = 40$ $ \lambda/2 - $dipoles.
+	
+	At $f_1=900\mathrm{MHz}$, each dipole has length $\frac{\lambda_1}{2} = \frac{c}{2f_1} = 0.167\mathrm{m}$.
+	
+	If we organize our dipoles in 2 columns of $\frac{N_d}{2} = 20$ dipoles $\implies$ each column has $20 \cdot \frac{\lambda_1}{2} = 3.34\mathrm{m}$.
+	
+	At $f_2=30\mathrm{GHz}$, each dipole has length $\frac{\lambda_2}{2} = \frac{c}{2f_2} = 5 \cdot 10^{-3}\mathrm{m}$.
+	
+	The height $N$ of the square panel (uniform linear array) is equal to the length of the dipole $\implies N = 5 \cdot 10^{-3} \mathrm{m}$.
+	
+	\section{Cell radius}
+	
+	\subsection*{Question 6}
+	
+	Assuming that there is no gain at the edge device ($g_r = 0\mathrm{dBi}$), we repeat our procedure from Question 1 to get
+	
+	\begin{equation}
+		K = \left(\frac{c \sqrt{g_t g_r}}{f_c \cdot 4 \pi d_0}\right)^2
+	\end{equation}
+	
+	which gives $K = 6.7 \cdot 10^{-3}$ or $K = -21.74\mathrm{dB}$.
+	
+	Assuming the Shannon formula is achievable, we can fix $C_{\text{Shannon}} = 10\mathrm{Mbits/s}$ and compute the SNR at cell edge,
+	
+	\begin{equation}
+		C_{\text{Shannon}} = W \log_{2}(1 + \gamma_{\text{edge}}) \implies \gamma_{\text{edge}} = 2^{\frac{C_{\text{Shannon}}}{W}} - 1
+	\end{equation}
+	
+	which gives $\gamma_{\text{edge}} = 0.414$ or $-3.83\mathrm{dB}$.
+	
+	\textbf{We observe that this SNR value is very low. The signal power is lower than the noise power.}
+	
+	We can now calculate the received power at cell edge $P_{\text{r,edge}}$.
+	
+	The noise power spectral density is $N_0[dBm] = 10\log_{10}(kT) = -203.83\mathrm{dBm}$. We have
+	
+	\begin{equation}
+		P_{\text{r,edge}} = \gamma_{\text{edge}}P_{\text{noise}} = \gamma_{\text{edge}}N_0W
+	\end{equation}
+	
+	which gives $P_{\text{r,edge}} = 3.43 \cdot 10^{-14}\mathrm{mW}$ or $-134.65\mathrm{dBm}$.
+	
+	To compute the cell size $d_{\text{edge}}$ we use the outage probability formula.
+	
+	We want $\mathbb{P}[P_r < P_{\text{r,edge}}] = P_{\text{out}} = 1 - 0.99$, so
+	
+	\begin{equation}
+		1 - Q\left(\frac{P_{\text{r,edge}}[dBm] - \left[P_t[dBm] + K[dB] +  10\alpha\log_{10}\left(\frac{d_0}{d_{\text{edge}}}\right)\right]}{\sigma[dB]} \right) = 1 - 0.99
+	\end{equation}
+	
+	in this expression, we used the simplified path loss model and assumed no co-channel interference.
+	
+	We conclude
+	
+	\begin{equation}
+		d_{\text{edge}} = 14.6 \mathrm{km}
+	\end{equation}
+	
+	\subsection*{Question 7}
+	
+	We set 
+	\begin{align}
+		u = Q(k) &\implies u' = Q'(k)k'\\
+		v' = r &\implies v = \frac{r^2}{2}
+	\end{align}
+	
+	Using integration by parts (and the fact that $Q'(k) = -\frac{e^{-\frac{k^2}{2}}}{\sqrt{2\pi}}$) we have
+	
+	\begin{align}
+		C &= \frac{2}{R^2}\left(\frac{r^2}{2}Q(k)\big|_0^R - \int_{0}^{R} \frac{rb}{2} Q'(k) dr \right) \\
+		&= Q(a) - \frac{2}{R^2} \int_{-\infty}^{a} \frac{b}{2}R e^{\left(\frac{k-a}{b}\right)} \left(-\frac{e^{-\frac{k^2}{2}}}{\sqrt{2\pi}}\right)\frac{R}{b}e^{\left(\frac{k-a}{b}\right)}dk \quad \text{we make the substitution $r \to k$} \\
+		&= Q(a) + \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{a} e^{\frac{2(k-a)}{b} - \frac{k^2}{2}} dk \\
+		&= Q(a) + \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{a} e^{\frac{-\frac{b^2k^2}{2} + 2kb - 2ab}{b^2}} dk \quad \text{now we can complete the square on the exponent} \\
+		&= Q(a) + \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{a} e^{\frac{-\left(\frac{bk}{\sqrt{2}} - \sqrt{2}\right)^2 + 2 -2ab}{b^2}} dk \\
+		&= Q(a) + e^{\frac{2 - 2ab}{b^2}}\frac{1}{\sqrt{2\pi}}\int_{-\infty}^{a} e^{\frac{-\left(k - \frac{2}{b}\right)^2}{2}} dk \\
+		&= Q(a) + e^{\frac{2 - 2ab}{b^2}}\frac{1}{\sqrt{2\pi}}\int_{-\infty}^{a-\frac{2}{b}} e^{-\frac{k^2}{2}} dk \quad \text{we make the translation $k \to k - \frac{2}{b} $} \\
+		&= Q(a) + e^{\frac{2 - 2ab}{b^2}}\frac{1}{\sqrt{2\pi}}\int_{-a+\frac{2}{b}}^{+\infty} e^{-\frac{k^2}{2}} dk \quad \text{we manipulate the integration limits using the fact that the function is even}\\
+		&= Q(a) + e^{\frac{2 - 2ab}{b^2}}Q\left(\frac{2}{b} - a\right)
+	\end{align}
+	
+	\subsection*{Question 8}
+	
+	We describe the cell area in radial coordinates $(r, \theta)$ with $0\leq r\leq R$ and $0 \leq \theta \leq 2\pi$.
+	
+	We use $d_0 = R$ to compute $\bar{P}(r)$ using the simplified path loss model. We have
+	
+	\begin{equation}
+		\bar{P}(r) = P_t + K_{\text{dB}} - 10\alpha\log_{10}\left(\frac{r}{R}\right) + P_{\text{shadowing}}
+	\end{equation}
+	
+	Because we changed the reference distance, we need to recompute $K$. We can use the outage probability at the edge, we have
+	
+	\begin{align}
+		1 - &\mathbb{P}[P_{\text{shadowing}} \geq P_r^* - P_t - K_{\text{dB}}] = 0.1 \\
+		&\iff Q\left(\frac{P_r^* - P_t - K_{\text{dB}}}{\sigma}\right) = 0.9
+	\end{align}
+	
+	which gives $K = 145.75 \mathrm{dB}$.
+	
+	The proportion $p_{\text{covered}}$ of the covered cell area is given by
+	\begin{align}
+		p_{\text{covered}} &= \frac{\int_{0}^{2\pi}\int_{0}^{R} r\mathbb{I}_{\{\bar{P}(r,\theta) > P_r^*\} } dr d\theta}{\pi R^2} \quad \text{but we know that the received power depends only on $r$ } \\
+		&= \frac{2}{R^2} \int_{0}^{R} r\mathbb{I}_{\{ \bar{P}(r) > P_r^* \}} dr \\
+		&= \frac{2}{R^2} \int_{0}^{R} r\mathbb{I}_{\{ P_{\text{shadowing}} > P_r^* - P_t - K_{\text{dB}} + 10\alpha\log_{10}\left(\frac{r}{R}\right) \}}dr \\
+		&= \frac{2}{R^2} \int_{0}^{R} rQ\left(a+b\ln\left(\frac{r}{R}\right)\right) \quad \text{let $a = \frac{P_r^* - P_t - K_{\text{dB}}}{\sigma}$ and $b = \frac{10\alpha}{\sigma\ln 10}$} \\
+		&= Q(a) + e^{\frac{2 - 2ab}{b^2}}Q\left(\frac{2}{b} - a\right) \quad \text{using question 7}
+	\end{align}
+	
+	We get $p_{\text{covered}} \approx 1$.
+	
+	\section{SIR and SINR}
+	
+	\subsection*{Question 9}
+	
+	On the downlink, we consider all antennas simultaneously transmitting to the receiver. We want to compute
+	
+	\begin{equation}
+		\mathrm{SIR} = \frac{p_{\text{signal}}}{p_{\text{interference}}}
+	\end{equation}
+	
+	We can use the formula for $g(r)$ to compute $p_{\text{signal}}$, we have
+	
+	\begin{equation}
+		p_{\text{signal}} = p_tKr^{-\eta}
+	\end{equation}
+	
+	We compute $p_{\text{interference}}$ using the superposition principle.
+	
+	\begin{equation}
+		p_{\text{interference}} = 2\sum_{j=0}^{+\infty} p_t K (r + jR)^{-\frac{\eta}{2}}
+	\end{equation}
+	
+	we conclude
+	
+	\begin{equation}
+		\mathrm{SIR} = \frac{r^{-\eta}}{2\sum_{j=0}^{+\infty} (r + jR)^{-\frac{\eta}{2}}}
+	\end{equation}
+	
+	$\implies$ the SIR does not depend on the transmit power $p_t$, only on the distance $r$.
+	
+	
+\end{document}
