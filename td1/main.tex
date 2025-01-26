@@ -140,11 +140,11 @@
 	
 	At $f_1=900\mathrm{MHz}$, each dipole has length $\frac{\lambda_1}{2} = \frac{c}{2f_1} = 0.167\mathrm{m}$.
 	
-	If we organize our dipoles in 2 columns of $\frac{N_d}{2} = 20$ dipoles $\implies$ each column has $20 \cdot \frac{\lambda_1}{2} = 3.34\mathrm{m}$.
+	If we organize our dipoles in 2 columns of $\frac{N_d}{2} = 20$ dipoles $\implies$ each column has $\frac{N_d}{2} \cdot \frac{\lambda_1}{2} = 3.34\mathrm{m}$.
 	
 	At $f_2=30\mathrm{GHz}$, each dipole has length $\frac{\lambda_2}{2} = \frac{c}{2f_2} = 5 \cdot 10^{-3}\mathrm{m}$.
 	
-	The height $N$ of the square panel (uniform linear array) is equal to the length of the dipole $\implies N = 5 \cdot 10^{-3} \mathrm{m}$.
+	The height of the square panel is $\sqrt{N_d} \cdot \frac{\lambda_2}{2} = 3.16 \cdot 10^{-2} \mathrm{m}$.
 	
 	\section{Cell radius}
 	
@@ -170,13 +170,13 @@
 	
 	We can now calculate the received power at cell edge $P_{\text{r,edge}}$.
 	
-	The noise power spectral density is $N_0[dBm] = 10\log_{10}(kT) = -203.83\mathrm{dBm}$. We have
+	The noise power spectral density is $N_0 = -174 \frac{\mathrm{dBm}}{\mathrm{Hz}}$. We have
 	
 	\begin{equation}
 		P_{\text{r,edge}} = \gamma_{\text{edge}}P_{\text{noise}} = \gamma_{\text{edge}}N_0W
 	\end{equation}
 	
-	which gives $P_{\text{r,edge}} = 3.43 \cdot 10^{-14}\mathrm{mW}$ or $-134.65\mathrm{dBm}$.
+	which gives $P_{\text{r,edge}} = 3.3 \cdot 10^{-11}\mathrm{mW}$ or $-104.82\mathrm{dBm}$.
 	
 	To compute the cell size $d_{\text{edge}}$ we use the outage probability formula.
 	
@@ -191,7 +191,7 @@
 	We conclude
 	
 	\begin{equation}
-		d_{\text{edge}} = 14.6 \mathrm{km}
+		d_{\text{edge}} = 1.43 \mathrm{km}
 	\end{equation}
 	
 	\subsection*{Question 7}
@@ -218,33 +218,26 @@
 	
 	\subsection*{Question 8}
 	
-	We describe the cell area in radial coordinates $(r, \theta)$ with $0\leq r\leq R$ and $0 \leq \theta \leq 2\pi$.
+	We describe the cell area in radial coordinates $(r, \theta)$ with $0\leq r\leq R = d_{\mathrm{edge}}$ and $0 \leq \theta \leq 2\pi$. For the integration we know that $dx dy = r dr d\theta$.
 	
-	We use $d_0 = R$ to compute $\bar{P}(r)$ using the simplified path loss model. We have
+	Using the simplified path loss model we know that
 	
 	\begin{equation}
-		\bar{P}(r) = P_t + K_{\text{dB}} - 10\alpha\log_{10}\left(\frac{r}{R}\right) + P_{\text{shadowing}}
+		\bar{P}(r) = \bar{P}(R) + 10\alpha \log_{10}\left(\frac{r}{R}\right)
 	\end{equation}
 	
-	Because we changed the reference distance, we need to recompute $K$. We can use the outage probability at the edge, we have
-	
+	now the proportion $p_{\text{covered}}$ of the covered cell area is given by
 	\begin{align}
-		1 - &\mathbb{P}[P_{\text{shadowing}} \geq P_r^* - P_t - K_{\text{dB}}] = 0.1 \\
-		&\iff Q\left(\frac{P_r^* - P_t - K_{\text{dB}}}{\sigma}\right) = 0.9
+		p_{\text{covered}} &= \frac{\int_{0}^{2\pi}\int_{0}^{R} r \mathbb{P} \left[\bar{P}(r) > P_r^* \right] dr d\theta}{\pi R^2} \quad \text{we know that the received power depends only on $r$} \\
+		&= \frac{2}{R^2} \int_{0}^{R} r \mathbb{P}\left[ \bar{P}(r) > P_r^*\right] dr \\
+		&= \frac{2}{R^2} \int_{0}^{R} r Q\left(\frac{P_r^* - (\bar{P}(r) - \bar{P}(R))}{\sigma}\right) dr \\
+		&= \frac{2}{R^2} \int_{0}^{R} r Q\left(\frac{P_r^* - \bar{P}(R)}{\sigma} - \frac{10\alpha}{\sigma}\log_{10}\left(\frac{r}{R}\right)\right) dr \\
+		&=\frac{2}{R^2} \int_{0}^{R} r Q\left(\frac{P_r^* - \bar{P}(R)}{\sigma} + \frac{10\alpha \log_{10} e}{\sigma}\ln\left(\frac{r}{R}\right)\right) dr \\
+		&=\frac{2}{R^2} \int_{0}^{R} r Q\left(a + b\ln\left(\frac{r}{R}\right)\right) dr \quad \text{with }a=\frac{P_r^* - \bar{P}(R)}{\sigma} \text{ and } b = \frac{10\alpha \log_{10} e}{\sigma} \\
+		&=  Q(a) + e^{\frac{2 - 2ab}{b^2}}Q\left(\frac{2}{b} - a\right) \quad \text{using the result from question 7}
 	\end{align}
 	
-	which gives $K = 145.75 \mathrm{dB}$.
-	
-	The proportion $p_{\text{covered}}$ of the covered cell area is given by
-	\begin{align}
-		p_{\text{covered}} &= \frac{\int_{0}^{2\pi}\int_{0}^{R} r\mathbb{I}_{\{\bar{P}(r,\theta) > P_r^*\} } dr d\theta}{\pi R^2} \quad \text{but we know that the received power depends only on $r$ } \\
-		&= \frac{2}{R^2} \int_{0}^{R} r\mathbb{I}_{\{ \bar{P}(r) > P_r^* \}} dr \\
-		&= \frac{2}{R^2} \int_{0}^{R} r\mathbb{I}_{\{ P_{\text{shadowing}} > P_r^* - P_t - K_{\text{dB}} + 10\alpha\log_{10}\left(\frac{r}{R}\right) \}}dr \\
-		&= \frac{2}{R^2} \int_{0}^{R} rQ\left(a+b\ln\left(\frac{r}{R}\right)\right) \quad \text{let $a = \frac{P_r^* - P_t - K_{\text{dB}}}{\sigma}$ and $b = \frac{10\alpha}{\sigma\ln 10}$} \\
-		&= Q(a) + e^{\frac{2 - 2ab}{b^2}}Q\left(\frac{2}{b} - a\right) \quad \text{using question 7}
-	\end{align}
-	
-	We get $p_{\text{covered}} \approx 1$.
+	we get $p_{\text{covered}} = 0.999657$.
 	
 	\section{SIR and SINR}
 	

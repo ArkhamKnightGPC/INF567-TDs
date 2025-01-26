@@ -101,3 +101,14 @@ print(f"N = {N}")
 #Question 5
 N_d = math.pow(10, 16/10)
 print(f"N_d = {N_d}")
+
+N_d = round(N_d) #we need an integer number of antennas
+freq1 = 900*(10**6)
+freq2 = 30*(10**9)
+dipole_size1 = c/(2*freq1)
+dipole_size2 = c/(2*freq2)
+
+size_two_columns = (N_d/2)*dipole_size1
+print(f"two columns => {size_two_columns}")
+size_square_panel = math.sqrt(N_d)*dipole_size2
+print(f"square panel => {size_square_panel}")

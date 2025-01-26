@@ -30,36 +30,30 @@ SNR_min = math.pow(2, physical_data_rate/signal_bandwidth) - 1
 SNR_min_dB = 10*math.log10(SNR_min)
 print(f"SNR_min = {SNR_min}  SNR_min_dB = {SNR_min_dB}")
 
-boltzmann_cte = 1.38*(10**-23)
-temperature = 300
-N_0_dBm = 10*math.log10(boltzmann_cte*temperature)
+N_0_dBm = -174
 N_0 = math.pow(10, N_0_dBm/10)
 print(f"N_0 = {N_0_dBm}dBm or {N_0}")
 received_power_edge_mW = SNR_min*N_0*signal_bandwidth
 received_power_edge_dBm = 10*math.log10(received_power_edge_mW)
 print(f"P_r,edge = {received_power_edge_mW}mW or {received_power_edge_dBm}dBm")
 
-aux = (received_power_edge_dBm - transmitter_power_dBm - K_db - shadowing_standard_deviation_dB*special.erfcinv(2*success_rate))/(10*path_loss_exponent)
-d_cell = reference_distance*math.pow(10, -aux)
-print(f"d_cell = {d_cell}")
-
-#Question 8
 def Q(x):
     return 0.5*special.erfc(x/math.sqrt(2))
 def Q_inv(x):
     aux = math.sqrt(2)*special.erfcinv(2*x)
     assert(math.pow(Q(aux) - x, 2) < 0.1)
     return aux
+aux = (received_power_edge_dBm - transmitter_power_dBm - K_db - shadowing_standard_deviation_dB*Q_inv(success_rate))/(10*path_loss_exponent)
+d_edge = reference_distance*math.pow(10, -aux)
+print(f"d_edge = {d_edge}")
 
+#Question 8
 Pr_min_dBm = -110
 
-aux = Pr_min_dBm - transmitter_power_dBm
-aux2 =  Q_inv(0.9)
-new_K_dB = (shadowing_standard_deviation_dB*aux2 - aux)
-new_K = math.pow(10, new_K_dB/10)
-print(f"K = {new_K_dB}dB or {new_K}")
+P_R = transmitter_power_dBm + K_db + 10*path_loss_exponent*math.log10(reference_distance/d_edge)
 
-a = (Pr_min_dBm - new_K_dB - transmitter_power_dBm)/shadowing_standard_deviation
-b = (10*path_loss_exponent)/(math.log(10)*shadowing_standard_deviation)
-p_covered =Q(a) + math.exp((2 - 2*a*b)/(b*b))*Q(2/b - a)
+a = (Pr_min_dBm - P_R)/shadowing_standard_deviation_dB
+b = 10*path_loss_exponent*math.log10(math.e)/shadowing_standard_deviation_dB
+print(f"a={a} b={b}")
+p_covered = Q(a) + math.exp((2 - 2*a*b)/(b*b))*Q(2/b - a)
 print(f"p_covered = {p_covered}")
