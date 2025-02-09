@@ -1,0 +1,180 @@
+\documentclass[]{article}
+\pagenumbering{gobble}
+\usepackage[a3paper]{geometry}
+\usepackage{amsmath, amssymb, amscd, amsthm, amsfonts}
+\usepackage{graphicx}
+\usepackage{tcolorbox}
+
+\title{TD2: WiFi Performance Analysis}
+\author{Gabriel PEREIRA DE CARVALHO}
+\date{Last modification: \today}
+
+\begin{document}
+	
+	\maketitle
+	
+	\section{System Model}
+	
+	\subsection*{Question 1}
+	
+	In our model, the $n$ stations are symmetric. They have the same back-off parameters and use the same algorithm. We conclude that the expected value of the time spent in back-off is the same for all stations.
+	
+	\section{Back-off Analysis}
+	
+	\subsection*{Question 2}
+	
+	\subsubsection*{Computing $\mathbb{E}[R]$}
+	
+	\begin{tcolorbox}
+		To compute the expected value, we shall use the two series below
+		\begin{align}
+			\begin{cases}
+				\sum_{k=0}^{K} x^k &= \frac{1 - x^{K+1}}{1 - x} \\
+				\sum_{k=0}^{K} k x^k &= \frac{x(1 - (K+1)x^K + Kx^{K+1})}{(1 - x)^2}
+			\end{cases}
+		\end{align}
+	\end{tcolorbox}
+	
+	\begin{align}
+		\mathbb{E}[R] &= \left(\sum_{k=0}^{K} k\mathbb{P}[R = k]\right) + (K+1)\mathbb{P}[R=K+1] \\
+		&= \left(\sum_{k=0}^{K} k(1-\gamma)\gamma^{k-1}\right) + (K+1)\gamma^K \\
+		&= (1-\gamma)\left(\sum_{k=0}^{K-1} k\gamma^{k} + \sum_{k=0}^{K-1} \gamma^{k}\right) + (K+1)\gamma^K \quad \text{now we use the two series sums to simplify} \\
+		&= (1 - \gamma)\left(\frac{\gamma(1 - K\gamma^{K-1} + (K-1)\gamma^K)}{(1 - \gamma)^2} + \frac{1 - \gamma^K}{1 - \gamma}\right) + (K+1)\gamma^K \quad \text{now we expand the terms to simplify} \\
+		&= \frac{1 - \gamma^{K+1}}{1-\gamma} \quad \text{and here we identify a series} \\
+		&= \sum_{k=0}^{K} \gamma^k
+	\end{align}
+	
+	\subsubsection*{Computing $\mathbb{E}[X]$}
+	
+	\begin{tcolorbox}
+		Here we will use the sum
+		\begin{equation}
+			\sum_{i=k}^{K} \gamma^i = \frac{\gamma^i - \gamma^{K+1}}{1 - \gamma} \approx \frac{\gamma^i }{1 - \gamma}
+		\end{equation}
+	\end{tcolorbox}
+	
+	Let $t_i = \sum_{k=0}^{i} b_k \quad \forall i \in \{0,..,K\}$ denote the possible values of X. We have
+	
+	\begin{align}
+		\mathbb{E}[X] &= \sum_{i=0}^{K} t_i \mathbb{P}[X = t_i] \\
+		&= \sum_{i=0}^{K} \left(\sum_{k=0}^{i} b_k\right) \gamma^i(1-\gamma) \quad \text{now we can inverse the sums} \\
+		&= \sum_{k=0}^{K} b_k (1 - \gamma) \left(\sum_{i=k}^{K} \gamma^i\right) \quad \text{we use the series sum to simplify} \\
+		&= \sum_{k=0}^{K} b_k \gamma^k
+	\end{align}
+	
+	\subsection*{Question 3}
+	
+	Let $\phi = \{t_n, n \geq 1\}$ denote the timestamps of successful transmissions. If the reward is equal to the number of attempts until a success, we observe that $R$ and $X$ are defined exactly like in Question 2.
+	
+	The ratio $\frac{R(t)}{t}$ is the attempt rate, which we know is $\beta$. We use the \textit{Renewal reward} theorem to conclude
+	
+	\begin{equation}
+		\beta = \frac{\mathbb{E}[R]}{\mathbb{E}[X]} \implies \beta = \frac{\sum_{k=0}^{K} \gamma^k}{\sum_{k=0}^{K} k \gamma^k} = G(\gamma)
+	\end{equation}
+	
+	\subsection*{Question 4}
+	
+	So we start with $b_0 = CW_{\text{min}}$ and double the back-off duration until $b_m$ where it becomes constant.
+	
+	\begin{align}
+		b_k = \begin{cases}
+			2^k \cdot CW_{\text{min}} \quad \forall 0 \leq k \leq m \\
+			2^m \cdot CW_{\text{min}} \quad \forall k > m
+		\end{cases}
+	\end{align}
+	
+	\section{Fixed Point}
+	
+	\subsection*{Question 5}
+	
+	There is a collision $\iff$ one or more of the other $n-1$ stations attempts a transmission.
+	
+	\begin{align}
+		\Gamma(\beta) &= \sum_{k=1}^{n-1} \mathbb{P}[k \text{ attempts}] \\
+			&= 1 - \mathbb{P}[0 \text{ attempts}] \\
+			&= 1 - (1-\beta)^{n-1}
+	\end{align}
+	
+	\subsection*{Question 6}
+	
+	\begin{tcolorbox}
+		We use the fact that the interval $[0, 1] \in \mathbb{R}$ is convex and compact in $\mathbb{R}$.
+	\end{tcolorbox}
+	
+	We know that $\Gamma: [0, 1] \to [0, 1]$ and $G: [0, 1] \to [0, 1]$ are both continuous real functions $\implies \Gamma \circ G: [0, 1] \to [0, 1]$ is continuous.
+	
+	Thus, by \textit{Brouwer's theorem}, $\Gamma \circ G$ has a fixed point.
+	
+	\subsection*{Question 7}
+	
+	Suppose that $\{b_k\}_{0 \leq k \leq K}$ is an increasing sequence.
+	
+	We observe that $\frac{d \Gamma(\beta)}{d \beta} = (n-1)(1-\beta)^{n-2} \geq 0 \quad \forall \beta \in [0, 1]$. So $\Gamma$ is an increasing function. 
+	
+	Given that $G$ is decreasing, $\Gamma \circ G$ is decreasing.
+	
+	The identity function is increasing so $\gamma  = \Gamma \circ G (\gamma)$ can have at most one fixed point.
+	
+	In Question 6, we proved there is at least one fixed point $\implies$ there must exist exactly one fixed point.
+	
+	\section{Throughput Calculation}
+	
+	\subsection*{Question 8}
+	
+	We observe that $1 - (1-\beta)^n = $ probability no one attempts to transmit in a slot.
+	
+	Thus, $\frac{1}{1 - (1-\beta)^n} = $ expected number of slots until an attempt is made.
+	
+	The only scenario where the reward $R_j > 0$ is when only one of the station transmits during these slots.
+	
+	In this case, a packet of length $L$ is transmitted in the network. We take the average reward over this number of slots
+	
+	\begin{equation}
+		\frac{L \mathbb{P}[R_j = L]}{1 - (1-\beta)^n} = \frac{n\beta(1-\beta)^{n-1}L}{1 - (1-\beta)^n}
+	\end{equation}
+	
+	\subsection*{Question 9}
+	
+	Using Question 8, we know that $\frac{1}{1 - (1-\beta)^n} = $ expected number of slots until an attempt is made.
+	
+	Since each slot has duration $\sigma$, the average duration of this period is
+	
+	$$\frac{\sigma}{1 - (1-\beta)^n}$$
+	
+	\subsection*{Question 10}
+	
+	First we have the duration until at least one station make an attempt and then the time spent either in a successful transmission or a collision (two disjoint possibilities).
+	
+	\begin{itemize}
+		\item we spend time $T_s$ in successful transmission with probability $(1-\beta)^{n-1}$
+		\item we spend time $T_c$ in collision with probability $1 - (1-\beta)^{n-1}$
+	\end{itemize}
+	
+	We conclude that average duration of activity period is
+	
+	\begin{equation}
+		\frac{\sigma}{1 - (1-\beta)^n} + T_s(1-\beta)^{n-1} + T_c\left(1 - (1-\beta)^{n-1}\right)
+	\end{equation}
+	
+	\subsection*{Question 11}
+	
+	We calculate the throughput $S = \frac{R(t)}{t}$ using the renewal reward theorem.
+	
+	\begin{align}
+		S &= \frac{\mathbb{E[R]}}{\mathbb{E}[X]} \quad \text{we use the results of questions 8 and 10} \\
+		&= \frac{\left(\frac{n\beta(1-\beta)^{n-1}L}{1 - (1-\beta)^n}\right)}{\left(\frac{\sigma}{1 - (1-\beta)^n} + T_s(1-\beta)^{n-1} + T_c\left(1 - (1-\beta)^{n-1}\right)\right)}
+	\end{align}
+	
+	\subsection*{Question 12}
+	
+	The \texttt{fixed\_point} function from scipy was used to compute $\gamma$ and the function $G$ was used to compute $\beta$ in our script. The plot obtained is
+	
+	\begin{figure}[h]
+		\centering
+		\includegraphics{ex12.png}
+	\end{figure}
+	
+	We observe that for $n < 12$ the throughput is increasing! Indicating that at first the number of successful transmissions is not upset by collisions between the stations. However for $n > 12$ collisions get more and more important.
+	
+
+\end{document}
