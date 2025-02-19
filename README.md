@@ -9,3 +9,7 @@ Problem sets (*Travaux dirigés* - TDs) from the course INF567: Wireless Network
 - TD2: WiFi Performance Analysis
 
 - TD3: Capacity Regions and ARQ
+
+- TD4: LTE Peak Data Rate and NR Latency
+
+- TD5: IoT Protocols (Sigfox and LoRa)
