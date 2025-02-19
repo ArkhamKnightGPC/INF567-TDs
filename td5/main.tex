@@ -1,0 +1,89 @@
+\documentclass[]{article}
+\pagenumbering{gobble}
+\usepackage[a3paper]{geometry}
+\usepackage{amsmath, amssymb, amscd, amsthm, amsfonts}
+\usepackage{graphicx}
+\usepackage{tcolorbox}
+
+\title{TD5: IoT Protocols}
+\author{Gabriel PEREIRA DE CARVALHO}
+\date{Last modification: \today}
+
+\begin{document}
+	
+	\maketitle
+	
+	\section{Battery Life Time in LoRa}
+	
+	\subsection*{Question 1}
+	
+	Given the bandwidth $B$ and the spreading factor $\mathrm{SF}$ (number of bits per symbol) we have
+	
+	\begin{align}
+		\begin{cases}
+			N &= 2^{SF} = 4096\\
+			T_{\text{symbol}} &= \frac{N}{B} = 3.28 \cdot 10^{-2} \mathrm{s}
+		\end{cases}
+	\end{align}
+	
+	We compute number of symbols in the transmitted packet $n$,
+	\begin{equation}
+		n = q + \frac{1}{SF}\left(\frac{8p}{r} + o\right) = 81.5 \approx 82 \text{ symbols}
+	\end{equation}
+	
+	now we can compute the packet transmission time
+	\begin{equation}
+		T_{tx} = n \cdot T_{\text{symbol}} = 2.68 \mathrm{s}
+	\end{equation}
+	
+	\subsection*{Question 2}
+	
+	Both the receive windows needs to be long enough to detect a preamble, we have
+	
+	\begin{equation}
+		T_{window}^A = q \cdot T_{\text{symbol}} = 0.39 \mathrm{s}
+	\end{equation}
+	
+	now to compute total receive time, we add the two delays $\delta = 1\mathrm{s}$ to the two window durations
+	
+	\begin{equation}
+		T_{rx}^A = 2\delta + 2T_{window}^A = 2.79 \mathrm{s}
+	\end{equation}
+	
+	\subsection*{Question 3}
+	
+	We calculate the average current
+	\begin{equation}
+		I_{avg} = \frac{I_{tx} \cdot T_{tx} + I_{rx} \cdot T_{rx}^A + I_{\text{sleep}} \cdot T_{\text{sleep}}}{T_{\text{transmission}}} = 50.6 \mathrm{\mu A}
+	\end{equation}
+	
+	and now we compute the battery life
+	\begin{equation}
+		L = \frac{C}{I_{avg}} = 49388.71 \text{ hours} = 5.63 \text{ years}
+	\end{equation}
+	
+	\subsection*{Question 4}
+	
+	\subsection*{Question 5}
+	
+	\subsection*{Question 6}
+	
+	\subsection*{Question 7}
+	
+	\section{Sigfox MAC Performance}
+	
+	\subsection*{Question 8}
+	
+	\subsection*{Question 9}
+	
+	\subsection*{Question 10}
+	
+	\section{LoRa Coverage}
+	
+	\subsection*{Question 11}
+	
+	\subsection*{Question 12}
+	
+	\subsection*{Question 13}
+
+\end{document}
