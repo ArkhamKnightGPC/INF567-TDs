@@ -1,0 +1,117 @@
+\documentclass[]{article}
+\pagenumbering{gobble}
+\usepackage[a3paper]{geometry}
+\usepackage{amsmath, amssymb, amscd, amsthm, amsfonts}
+\usepackage{graphicx}
+\usepackage{tcolorbox}
+\usepackage{hyperref}
+
+\title{TD4: LTE Peak Data Rate and NR Latency}
+\author{Gabriel PEREIRA DE CARVALHO}
+\date{Last modification: \today}
+
+\begin{document}
+	
+	\maketitle
+	
+	\subsection*{Question 1}
+	
+	The maximum possible signal bandwidth in LTE is $20$MHz corresponding to $100$ resource blocks.
+	
+	\subsection*{Question 2}
+	
+	In the normal configuration, LTE has $7$ OFDM symbols per slot.
+	
+	Each radio frame has $20$ slots $\implies$ $140$ OFDM symbols per radio frame.
+	
+	Now we do dimensional analysis to get the corresponding number of REs,
+	
+	\begin{equation}
+		1 \text{radio frame} \cdot \frac{20 \text{slots}}{1 \text{radio frame}} \cdot \frac{100 \text{RBs}}{1 \text{slot}} \cdot \frac{84 \text{REs}}{1 \text{RB}} = 168000 \text{REs}
+	\end{equation}
+	
+	\subsection*{Question 3}
+	
+	We know that PCFICH is always carried by $16$REs at the first symbol of each subframe (\href{https://sharetechnote.com/html/Handbook_LTE_PCFICH.html}{source}).
+	
+	For PHICH, an ACK or NACK is encoded in 3 bits. Each bit of PHICH is spread by 4 bits using normal prefix $\implies$ each PHICH becomes $12$ bits. PHICH is modulated in BPSK $\implies$ each symbol carries one bit. Each RE carries $1$ symbol $\implies$ we need $12$REs to carry one PHICH (\href{https://sharetechnote.com/html/Handbook_LTE_PHICH_PHICHGroup.html}{source}).
+	
+	The PDCCH occupies the remaining REs in the control region which occupies one symbol per subframe $\implies$  $16800$ \text{REs} in total. So PDCCH occupies
+	$16800 - 12 - 16 = 16772$REs.
+	
+	\subsection*{Question 4}
+	
+	The PSS is transmitted in 2 slots per radio frame and mapped to 62 active subcarriers $\implies$ 62 REs per slot. So per frame we have $124$ REs.
+	
+	Similarly, the SSS is transmitted in 2 slots per radio frame and mapped to 62 active subcarriers $\implies$ 62 REs per slot. So per frame we have $124$ REs.
+	
+	The PBCH is transmitted in one subframe every 4 frames and also mapped to 72 active subcarriers $\implies$ $\frac{72}{4} = 18$ REs per frame.
+	
+	\subsection*{Question 5}
+	
+	4 antennas $\implies$ 12REs per RB (\href{https://marceaucoupechoux.wp.imt.fr/files/2018/02/BdL-4G-eng.pptx.pdf}{source}) which is $\frac{12}{84} = 14\%$ of all REs.
+	
+	\subsection*{Question 6}
+	
+	The densest modulation in LTE is 64-QAM. Each symbol in 64-QAM carries 6 bits.
+	
+	Maximum number of MIMO parallel flows is 4 (using 4x4 MIMO, 4 input flows/output flows).
+	
+	Duration of a radio frame is 10ms.
+	
+	Raw peak data rate is
+	
+	\begin{equation}
+		\frac{0.86 \cdot 168000 \text{REs} \cdot 6 \text{bits} \cdot 4 \text{parallel flows}}{10 \text{ms}} = 346.8 \text{Mbps}
+	\end{equation}
+	
+	\subsection*{Question 7}
+	
+	We have $\frac{3}{4} \cdot 346.8 \text{Mbps} = 260 \text{Mbps}$
+	
+	\subsection*{Question 8}
+	
+	The measured data rates are probably a bit smaller because we assume ideal channel conditions with no interference, no errors, no congestion and an idealized overhead.
+	
+	\subsection*{Question 9}
+	
+	\subsubsection*{OFDM symbol duration}
+	
+	Without cyclic prefix we have $T_{\text{symbol}} = \frac{1}{\Delta f} = 33.3 \mu s$
+	
+	With cyclic prefix we have
+	
+	\begin{align}
+		T_{\text{symbol}}^\prime = \frac{1}{\Delta f} + t_{\text{prefix}} = 33.3\mu s + 2.3\mu s = 35.6 \mu s
+	\end{align}
+	
+	\subsubsection*{Duration of the periodic scheme}
+	
+	We have 3 different periodic schemes: DDDSU, DDDDDDDSUU and DSDU.
+	
+	The DDDSU scheme has 5 OFDM symbols per period $\implies T_{\text{DDDSU}} = 5 \cdot 35.6 \mu s = 178 \mu s$.
+	
+	The DDDDDDDSUU scheme has 10 OFDM symbols per period $\implies T_{\text{DDDSU}} = 10 \cdot 35.6 \mu s = 356 \mu s$.
+	
+	And the DSDU scheme has 4 OFDM symbols per period $\implies T_{\text{DDDSU}} = 4 \cdot 35.6 \mu s = 142.4 \mu s$.
+	
+	\subsubsection*{Minimum and maximum DL latency}
+	
+	For maximal latency we consider the full duration of each scheme and for the minimal latency we consider the duration up to the first possible uplink symbol (can be U or S).
+	
+	\begin{table}[h]
+		\centering
+		\begin{tabular}{|c|c|c|}
+			\hline
+			\textbf{Frame Structure} & \textbf{Min DL Latency} & \textbf{Max DL Latency} \\
+			\hline
+			DDDSU & 4 symbols = 142.4 $\mu$s & 5 symbols = 178 $\mu$s \\
+			\hline
+			DDDDDDDSUU & 8 symbols = 284.8 $\mu$s & 10 symbols = 356 $\mu$s \\
+			\hline
+			DSDU & 2 symbols = 71.2 $\mu$s & 4 symbols = 142.4 $\mu$s \\
+			\hline
+		\end{tabular}
+	\end{table}
+	
+\end{document}
