@@ -4,6 +4,7 @@
 \usepackage{amsmath, amssymb, amscd, amsthm, amsfonts}
 \usepackage{graphicx}
 \usepackage{tcolorbox}
+\usepackage{hyperref}
 
 \title{TD5: IoT Protocols}
 \author{Gabriel PEREIRA DE CARVALHO}
@@ -64,26 +65,186 @@
 	
 	\subsection*{Question 4}
 	
+	\subsubsection*{Beacon duration}
+	
+	Let's compute the duration of a beacon symbol
+	
+	\begin{equation}
+		T_{\text{symbol}}^{\text{beacon}} = \frac{2^{9}}{125\text{kHz}} = 4.1\text{ms}
+	\end{equation}
+	
+	Now let's compute the number of symbols in the beacon. The 17 bytes in the payload with a coding rate of $\frac{4}{5}$ and a spreading factor of 9 bits per symbol are equivalent to $\frac{17 \cdot 8}{\frac{4}{5} \cdot 9} = 19$ symbols. We have
+	
+	\begin{equation}
+		N^{\text{beacon}} = 29\text{ symbols}
+	\end{equation}
+	
+	The beacon duration is 
+	
+	\begin{equation}
+		T^{\text{beacon}} = N^{\text{beacon}} \cdot T_{\text{symbol}}^{\text{beacon}} = 0.12\text{s}
+	\end{equation}
+	
+	\subsubsection*{Ping slot duration}
+	
+	Let's compute the duration of a symbol in the ping slot
+	
+	\begin{equation}
+		T_{\text{symbol}}^{\text{ping}} = \frac{2^{12}}{125\text{kHz}} = 32.8\text{ms}
+	\end{equation}
+	
+	We know the number of symbols in the ping slot is $N^{\text{ping}} = 12$ symbols.
+	
+	The ping slot duration is
+	
+	\begin{equation}
+		T^{\text{ping}} = N^{\text{ping}} \cdot T_{\text{symbol}}^{\text{ping}} = 0.39\text{s}
+	\end{equation}
+	
+	\subsubsection*{$T_{rx}^B$ calculation}
+	
+	The average packet reception time of B is a weighted average of the reception times of beacons and ping slots. We have
+	
+	\begin{equation}
+		T_{rx}^B = \frac{\frac{1}{t_p} \cdot T^{\text{ping}} + \frac{1}{t_b} \cdot T^{\text{beacon}}}{\frac{1}{t_p} + \frac{1}{t_b}} = 0.391\text{s}
+	\end{equation}
+	
 	\subsection*{Question 5}
+	
+	We calculate the average current
+	\begin{equation}
+		I_{avg}^B = \frac{I_{tx} \cdot T_{tx} + I_{rx} \cdot T_{rx}^B + I_{\text{sleep}} \cdot T_{\text{sleep}}}{T_{\text{transmission}}} = 47.3\mathrm{\mu A}
+	\end{equation}
+	
+	and now we compute the battery life
+	\begin{equation}
+		L^B = \frac{C}{I_{avg}^B} = 52863.1 \text{ hours} = 6.03 \text{ years}
+	\end{equation}
 	
 	\subsection*{Question 6}
 	
+	In Class C, we have half the average receive time of Class A because instead of always listening to both receive windows the device on listen to only one of the two windows.
+	
+	\begin{equation}
+		T_{rx}^C = \frac{T_{rx}^A}{2} = 1.9 \mathrm{s}
+	\end{equation}
+	
 	\subsection*{Question 7}
+	
+	We calculate the average current
+	\begin{equation}
+		I_{avg}^C = \frac{I_{tx} \cdot T_{tx} + I_{rx} \cdot T_{rx}^C + I_{\text{sleep}} \cdot T_{\text{sleep}}}{T_{\text{transmission}}} = 48.7\mathrm{\mu A}
+	\end{equation}
+	
+	and now we compute the battery life
+	\begin{equation}
+		L^C = \frac{C}{I_{avg}^C} = 51351.7 \text{ hours} = 5.86 \text{ years}
+	\end{equation}
 	
 	\section{Sigfox MAC Performance}
 	
 	\subsection*{Question 8}
 	
+	The arrival rate of packets in the vulnerability window is
+	
+	\begin{equation}
+		\lambda_v = \frac{\lambda \delta_f}{W}
+	\end{equation}
+	
 	\subsection*{Question 9}
 	
+	The probability of at least one arrival is 
+	
+	\begin{equation}
+		P_{\text{arrival}} = 1 - \mathbb{P}[k = 0] = 1 - e^{\lambda_v T}
+	\end{equation}
+	
 	\subsection*{Question 10}
+	
+	Since each retransmission is independant, the probability of failure is
+	
+	\begin{equation}
+		P_{\text{failure}} = \left(1 - e^{\lambda_v T}\right)^r
+	\end{equation}
 	
 	\section{LoRa Coverage}
 	
 	\subsection*{Question 11}
 	
+	Given $N_0$ and $W$, we compute the noise power
+	
+	\begin{equation}
+		N = N_0 + 10\log_{10}(W) = -174 + 10\log_{10}(125000) = -123\text{dBm}
+	\end{equation}
+	
+	and now we compute the receiver sensitivity
+	
+	\begin{equation}
+		P_{\text{min}} = N + SNR = -123 + (-20) = -143\text{dBm}
+	\end{equation}
+	
 	\subsection*{Question 12}
 	
+	The total gain is $G = 6 + 10\log_{10}(2) = 12.93\text{dBi}$.
+	
+	The total loss is $L = 3\text{dB} + 18\text{dB} = 21\text{dB}$.
+	
+	The shadowing margin $M_s$ is 
+	
+	\begin{equation}
+		M_s = P_{\text{min}} - (P_{tx} + G - L) = -151.1\text{dBm}
+	\end{equation}
+	
 	\subsection*{Question 13}
+	
+	\subsubsection*{MAPL(Maximum Allowable Path Loss)}
+	
+	Let's compute the MAPL(\href{https://wireless-systems.ece.gatech.edu/6604/2019-lectures/week2.pdf}{source})
+	
+	\begin{equation}
+		\text{MAPL} = P_{tx} + G - L - P_{\text{min}} = 151.11\text{dB}
+	\end{equation}
+	
+	this means the signal can lose up to $151.11\text{dB}$ before it becomes too weak to detect.
+
+	\subsubsection*{Cell range in urban and rural areas}
+	
+	We use the Hata model with
+	
+	\begin{equation}
+		\text{MAPL} = A + B\log_{10}(d) + C
+	\end{equation}
+	
+	For urban areas we have
+	
+	\begin{align}
+		\begin{cases}
+			A_{\text{urban}} &= 69.55 + 26.16\log_{10}(f_c) - 13.82\log_{10}(h_b) = 282.97 \\
+			B_{\text{urban}} &= 44.9 - 6.55\log_{10}(h_b) = 35.22 \\
+			C_{\text{urban}} &= 3.2(\log_{10}(11.75f_c))^2 - 4.97 = 315.58
+		\end{cases}
+	\end{align}
+	
+	which gives
+	
+	\begin{equation}
+		d_{\text{urban}} = 10^{\frac{\text{MAPL} - A_{\text{urban}} + C_{\text{urban}}}{B_{\text{urban}}}} = 164.3\text{km}
+	\end{equation}
+	
+	For rural areas we have
+	
+	\begin{align}
+		\begin{cases}
+			A_{\text{rural}} &= A_{\text{urban}} \\
+			B_{\text{rural}} &= B_{\text{urban}} \\
+			C_{\text{rural}} &= 4.78(\log_{10}(f_c))^2 - 18.33\log_{10}(fc) + 40.94 = 259
+		\end{cases}
+	\end{align}
+	
+	which gives
+	
+	\begin{equation}
+		d_{\text{rural}} = 10^{\frac{\text{MAPL} - A_{\text{rural}} + C_{\text{rural}}}{B_{\text{rural}}}} = 4.07\text{km}
+	\end{equation}
 
 \end{document}
