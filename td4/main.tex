@@ -110,7 +110,13 @@
 	
 	\subsubsection*{Minimum and maximum DL latency}
 	
-	For maximal latency we consider the full duration of each scheme and for the minimal latency we consider the duration up to the first possible uplink symbol (can be U or S).
+	For minimum latency we consider that reception starts exactly at the beginning of \textbf{S}. For maximal latency, we consider that reception misses the first \textbf{DL} symbol of \textbf{S} and must wait until transmission reaches \textbf{S} again to receive the right data.
+	
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.7]{5GframeSchemesQuestion9.PNG}
+		\caption{Possible frame structures}
+	\end{figure}
 	
 	\begin{table}[h]
 		\centering
@@ -118,11 +124,11 @@
 			\hline
 			\textbf{Frame Structure} & \textbf{Min DL Latency} & \textbf{Max DL Latency} \\
 			\hline
-			DDDSU & 4 symbols = 142.4 $\mu$s & 5 symbols = 178 $\mu$s \\
+			DDDSU & 12 symbols = 427.2 $\mu$s & 81 symbols = 2883.6 $\mu$s \\
 			\hline
-			DDDDDDDSUU & 8 symbols = 284.8 $\mu$s & 10 symbols = 356 $\mu$s \\
+			DDDDDDDSUU & 12 symbols = 427.2 $\mu$s & 165 symbols = 5874 $\mu$s \\
 			\hline
-			DSDU & 2 symbols = 71.2 $\mu$s & 4 symbols = 142.4 $\mu$s \\
+			DSDU & 12 symbols = 427.2 $\mu$s & 65 symbols = 2314 $\mu$s \\
 			\hline
 		\end{tabular}
 	\end{table}
