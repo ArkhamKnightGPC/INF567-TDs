@@ -27,17 +27,20 @@
 	Now we do dimensional analysis to get the corresponding number of REs,
 	
 	\begin{equation}
-		1 \text{radio frame} \cdot \frac{20 \text{slots}}{1 \text{radio frame}} \cdot \frac{100 \text{RBs}}{1 \text{slot}} \cdot \frac{84 \text{REs}}{1 \text{RB}} = 168000 \text{REs}
+		1 \text{ radio frame} \cdot \frac{20 \text{ slots}}{1 \text{ radio frame}} \cdot \frac{100 \text{ RBs}}{1 \text{ slot}} \cdot \frac{84 \text{ REs}}{1 \text{ RB}} = 168000 \text{ REs}
 	\end{equation}
 	
 	\subsection*{Question 3}
 	
-	We know that PCFICH is always carried by $16$REs at the first symbol of each subframe (\href{https://sharetechnote.com/html/Handbook_LTE_PCFICH.html}{source}).
+	To maximize the data rate, the control region occupies one OFDM symbol per sub-frame. So the number or REs is
 	
-	For PHICH, an ACK or NACK is encoded in 3 bits. Each bit of PHICH is spread by 4 bits using normal prefix $\implies$ each PHICH becomes $12$ bits. PHICH is modulated in BPSK $\implies$ each symbol carries one bit. Each RE carries $1$ symbol $\implies$ we need $12$REs to carry one PHICH (\href{https://sharetechnote.com/html/Handbook_LTE_PHICH_PHICHGroup.html}{source}).
+	\begin{equation}
+		1 \text{ OFDM symbol} \cdot 12 \text{ sub-carriers} \cdot 100 \text{ RBs} = 1200 \text{ REs}
+	\end{equation}
 	
-	The PDCCH occupies the remaining REs in the control region which occupies one symbol per subframe $\implies$  $16800$ \text{REs} in total. So PDCCH occupies
-	$16800 - 12 - 16 = 16772$REs.
+	% We know that PCFICH is always carried by $16$REs at the first symbol of each subframe (\href{https://sharetechnote.com/html/Handbook_LTE_PCFICH.html}{source}).
+	% For PHICH, an ACK or NACK is encoded in 3 bits. Each bit of PHICH is spread by 4 bits using normal prefix $\implies$ each PHICH becomes $12$ bits. PHICH is modulated in BPSK $\implies$ each symbol carries one bit. Each RE carries $1$ symbol $\implies$ we need $12$REs to carry one PHICH (\href{https://sharetechnote.com/html/Handbook_LTE_PHICH_PHICHGroup.html}{source}).
+	% The PDCCH occupies the remaining REs in the control region which occupies one symbol per subframe...
 	
 	\subsection*{Question 4}
 	
@@ -45,11 +48,19 @@
 	
 	Similarly, the SSS is transmitted in 2 slots per radio frame and mapped to 62 active subcarriers $\implies$ 62 REs per slot. So per frame we have $124$ REs.
 	
-	The PBCH is transmitted in one subframe every 4 frames and also mapped to 72 active subcarriers $\implies$ $\frac{72}{4} = 18$ REs per frame.
+	The PBCH is transmitted in 4 slots per radio frame and mapped to 72 active subcarriers $\implies$ 72 REs per slot. So per frame we have $288$ REs.
+	
+	In total we have $124 \text{ REs} + 124 \text{ REs} + 288 \text{ REs} = 536 \text{ REs}$.
 	
 	\subsection*{Question 5}
 	
-	4 antennas $\implies$ 12REs per RB (\href{https://marceaucoupechoux.wp.imt.fr/files/2018/02/BdL-4G-eng.pptx.pdf}{source}) which is $\frac{12}{84} = 14\%$ of all REs.
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.5]{ReferenceSignalsQuestion5.PNG}
+		\caption{REs used for Reference signals for 4 antenna transmission}
+	\end{figure}
+	
+	4 antennas $\implies$ 12REs per RB which is $\frac{12}{84} = 14\%$ of all REs.
 	
 	\subsection*{Question 6}
 	
@@ -59,15 +70,17 @@
 	
 	Duration of a radio frame is 10ms.
 	
+	The number of REs transmitting useful data is $168000 \text{ REs} - 1200 \text{ REs} - 536 \text{ REs} = 166264 \text{ REs}$.
+	
 	Raw peak data rate is
 	
 	\begin{equation}
-		\frac{0.86 \cdot 168000 \text{REs} \cdot 6 \text{bits} \cdot 4 \text{parallel flows}}{10 \text{ms}} = 346.8 \text{Mbps}
+		\frac{0.86 \cdot 166264 \text{REs} \cdot 6 \text{bits} \cdot 4 \text{parallel flows}}{10 \text{ms}} = 343.2 \text{Mbps}
 	\end{equation}
 	
 	\subsection*{Question 7}
 	
-	We have $\frac{3}{4} \cdot 346.8 \text{Mbps} = 260 \text{Mbps}$
+	We have $\frac{3}{4} \cdot 343.2 \text{Mbps} = 257.4 \text{Mbps}$
 	
 	\subsection*{Question 8}
 	
