@@ -2,13 +2,14 @@ import math
 from scipy import special
 
 N0 = -174
-W = 125 * (10**3)
+W = 125000
 
 N = N0 + 10*math.log10(W)
-print(f"N = {N}")
+print(f"N = {N}dBm")
 
 SNR = -20
 Pmin = N + SNR
+print(f"receiver sensitivity = {Pmin}dBm")
 
 totalGain = 6 + 10*math.log(2)
 print(f"sum of gain of the two antennas = {totalGain}dB")
@@ -23,10 +24,9 @@ def Q_inv(x):
 
 Pout = 0.9
 Ptx = 16.15
-shadowingMargin = Pmin - Ptx - totalGain + totalLoss
-shadowingDeviation = (shadowingMargin)/Q_inv(1 - Pout)
+sigma = 7
+shadowingMargin = + (Ptx + totalGain - totalLoss) +sigma*Q_inv(1 - Pout)
 print(f"shadowing margin = {shadowingMargin}")
-print(f"shadowing std = {shadowingDeviation}")
 
 MAPL = Ptx + totalGain - totalLoss - Pmin
 print(f"MAPL = {MAPL}db")

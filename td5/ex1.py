@@ -26,7 +26,7 @@ print(f"Ttx = {Ttx} seconds")
 Twindow = preamble*Tsymbol 
 print(f"Twindow = {Twindow} seconds")
 delta = 1
-Trx = 2*(delta + Twindow) #packet receive time
+Trx = 2*Twindow #packet receive time
 print(f"Trx = {Trx} seconds")
 Tsleep = Ttransmission - Ttx - Trx
 I = (Itx*Ttx + Irx*Trx + Isleep*Tsleep)/Ttransmission
@@ -59,7 +59,8 @@ print(f"ping duration = {pingDuration}s")
 
 pingPeriodicity = 1
 beaconPeriodicity = 128
-Trx_B = (beaconDuration/beaconPeriodicity + pingDuration/pingPeriodicity)/(1/beaconPeriodicity + 1/pingPeriodicity)
+totalPeriod = max(pingPeriodicity, beaconPeriodicity, 7200)
+Trx_B = Trx + (beaconDuration*totalPeriod)/beaconPeriodicity + (pingDuration*totalPeriod)/pingPeriodicity
 print(f"Trx_B = {Trx_B}s")
 
 I_B = (Itx*Ttx + Irx*Trx_B + Isleep*Tsleep)/Ttransmission
@@ -68,13 +69,12 @@ BatteryLife_B = C/I_B #hours
 print(f"L = {BatteryLife_B} hours = {BatteryLife_B/(24*365.25)} years")
 print("----------")
 
-print("--- In class B ---")
-Trx_C = Trx/2
+print("--- In class C ---")
+Trx_C = 7200
 print(f"Trx_C = {Trx_C}s")
 
 I_C = (Itx*Ttx + Irx*Trx_C + Isleep*Tsleep)/Ttransmission
 print(f"Iavg_C = {I_C} A")
 BatteryLife_C = C/I_C #hours
-print(f"L = {BatteryLife_C} hours = {BatteryLife_C/(24*365.25)} years")
-print("----------")
+print(f"L = {BatteryLife_C} hours = {BatteryLife_C/(24*365.25)} years = {BatteryLife_C/24} days")
 print("----------")

@@ -42,25 +42,25 @@
 	Both the receive windows needs to be long enough to detect a preamble, we have
 	
 	\begin{equation}
-		T_{window}^A = q \cdot T_{\text{symbol}} = 0.39 \mathrm{s}
+		T_{window}^A = q \cdot T_{\text{symbol}} = 0.393 \mathrm{s}
 	\end{equation}
 	
-	now to compute total receive time, we add the two delays $\delta = 1\mathrm{s}$ to the two window durations
+	now to compute total receive time, we add the two window durations
 	
 	\begin{equation}
-		T_{rx}^A = 2\delta + 2T_{window}^A = 2.79 \mathrm{s}
+		T_{rx}^A = 2T_{window}^A = 0.786 \mathrm{s}
 	\end{equation}
 	
 	\subsection*{Question 3}
 	
 	We calculate the average current
 	\begin{equation}
-		I_{avg} = \frac{I_{tx} \cdot T_{tx} + I_{rx} \cdot T_{rx}^A + I_{\text{sleep}} \cdot T_{\text{sleep}}}{T_{\text{transmission}}} = 50.6 \mathrm{\mu A}
+		I_{avg} = \frac{I_{tx} \cdot T_{tx} + I_{rx} \cdot T_{rx}^A + I_{\text{sleep}} \cdot T_{\text{sleep}}}{T_{\text{transmission}}} = 47.8 \mathrm{\mu A}
 	\end{equation}
 	
 	and now we compute the battery life
 	\begin{equation}
-		L = \frac{C}{I_{avg}} = 49388.71 \text{ hours} = 5.63 \text{ years}
+		L = \frac{C}{I_{avg}} = 52256.3 \text{ hours} = 5.96 \text{ years}
 	\end{equation}
 	
 	\subsection*{Question 4}
@@ -103,68 +103,72 @@
 	
 	\subsubsection*{$T_{rx}^B$ calculation}
 	
-	The average packet reception time of B is a weighted average of the reception times of beacons and ping slots. We have
+	The average packet reception time of B is a weighted average of the reception times of beacons and ping slots. Using $T = 2\text{ hours} = 7200\text{ s}$ We have
 	
 	\begin{equation}
-		T_{rx}^B = \frac{\frac{1}{t_p} \cdot T^{\text{ping}} + \frac{1}{t_b} \cdot T^{\text{beacon}}}{\frac{1}{t_p} + \frac{1}{t_b}} = 0.391\text{s}
+		T_{rx}^B = T_{rx}^A + \frac{T \cdot T_{\text{beacon}}}{t_b} + \frac{T \cdot T_{\text{ping}}}{t_p} = 2838.6 \text{ s}
 	\end{equation}
 	
 	\subsection*{Question 5}
 	
 	We calculate the average current
 	\begin{equation}
-		I_{avg}^B = \frac{I_{tx} \cdot T_{tx} + I_{rx} \cdot T_{rx}^B + I_{\text{sleep}} \cdot T_{\text{sleep}}}{T_{\text{transmission}}} = 47.3\mathrm{\mu A}
+		I_{avg}^B = \frac{I_{tx} \cdot T_{tx} + I_{rx} \cdot T_{rx}^B + I_{\text{sleep}} \cdot T_{\text{sleep}}}{T_{\text{transmission}}} = 3.99 \mathrm{mA}
 	\end{equation}
 	
 	and now we compute the battery life
 	\begin{equation}
-		L^B = \frac{C}{I_{avg}^B} = 52863.1 \text{ hours} = 6.03 \text{ years}
+		L^B = \frac{C}{I_{avg}^B} = 626.68 \text{ hours} = 0.071 \text{ years}
 	\end{equation}
 	
 	\subsection*{Question 6}
 	
-	In Class C, we have half the average receive time of Class A because instead of always listening to both receive windows the device on listen to only one of the two windows.
+	In Class C, the device will listen continuously to the downlink channel (no time is spent on standby), which means 
 	
 	\begin{equation}
-		T_{rx}^C = \frac{T_{rx}^A}{2} = 1.9 \mathrm{s}
+		T_{rx}^C = T = 7200 \mathrm{s}
 	\end{equation}
 	
 	\subsection*{Question 7}
 	
 	We calculate the average current
 	\begin{equation}
-		I_{avg}^C = \frac{I_{tx} \cdot T_{tx} + I_{rx} \cdot T_{rx}^C + I_{\text{sleep}} \cdot T_{\text{sleep}}}{T_{\text{transmission}}} = 48.7\mathrm{\mu A}
+		I_{avg}^C = \frac{I_{tx} \cdot T_{tx} + I_{rx} \cdot T_{rx}^C + I_{\text{sleep}} \cdot T_{\text{sleep}}}{T_{\text{transmission}}} = 0.01\mathrm{A}
 	\end{equation}
 	
 	and now we compute the battery life
 	\begin{equation}
-		L^C = \frac{C}{I_{avg}^C} = 51351.7 \text{ hours} = 5.86 \text{ years}
+		L^C = \frac{C}{I_{avg}^C} = 248.8 \text{ hours} = 10.37 \text{ days}
 	\end{equation}
 	
 	\section{Sigfox MAC Performance}
 	
 	\subsection*{Question 8}
 	
-	The arrival rate of packets in the vulnerability window is
+	We add the expected arrival rate of each of the $N-1$ other devices. Each device sends $\lambda r$ packets with probability $\frac{\delta_f}{W}$.
+	
+	So the arrival rate of packets in the vulnerability window is
 	
 	\begin{equation}
-		\lambda_v = \frac{\lambda \delta_f}{W}
+		\lambda_v = (N-1)\lambda r \cdot \frac{\delta_f}{W}
 	\end{equation}
 	
 	\subsection*{Question 9}
 	
 	The probability of at least one arrival is 
 	
-	\begin{equation}
-		P_{\text{arrival}} = 1 - \mathbb{P}[k = 0] = 1 - e^{\lambda_v T}
-	\end{equation}
+	\begin{align}
+		P_{\text{arrival}} &= 1 - \mathbb{P}[k = 0] \\
+						   &= 1 - e^{\lambda_v T} \\
+						   &= 1 - e^{(N-1)\lambda r \frac{\delta_f}{W}}
+	\end{align}
 	
 	\subsection*{Question 10}
 	
 	Since each retransmission is independant, the probability of failure is
 	
 	\begin{equation}
-		P_{\text{failure}} = \left(1 - e^{\lambda_v T}\right)^r
+		P_{\text{failure}} = \left(1 - e^{\lambda_v T}\right)^r = \left(1 - e^{(N-1)\lambda r \frac{\delta_f}{W}}\right)^r
 	\end{equation}
 	
 	\section{LoRa Coverage}
@@ -180,7 +184,7 @@
 	and now we compute the receiver sensitivity
 	
 	\begin{equation}
-		P_{\text{min}} = N + SNR = -123 + (-20) = -143\text{dBm}
+		P_{\text{min}} = N + SNR = -123\text{dBm} + (-20 \text{dB}) = -143\text{dBm}
 	\end{equation}
 	
 	\subsection*{Question 12}
@@ -189,10 +193,17 @@
 	
 	The total loss is $L = 3\text{dB} + 18\text{dB} = 21\text{dB}$.
 	
-	The shadowing margin $M_s$ is 
+	The shadowing margin $M_s$ can be calculated with
+	
+	\begin{align}
+		P_{out} &= 1 - Q\left(\frac{P_{tx} + G - L - M_s}{\sigma}\right) \\
+		\iff M_s &= (P_{tx} + G - L) + \sigma Q^{-1}(1 - P_{out})
+	\end{align}
+	
+	which gives
 	
 	\begin{equation}
-		M_s = P_{\text{min}} - (P_{tx} + G - L) = -151.1\text{dBm}
+		M_s = 17.05\text{dB}
 	\end{equation}
 	
 	\subsection*{Question 13}
